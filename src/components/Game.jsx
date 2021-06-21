@@ -6,7 +6,6 @@ export default class Game extends React.Component {
     super(props);
     this.state = {
       nextPlayer: "X",
-      squares: Array(9).fill(null),
       winner: null,
       history: [Array(9).fill(null)],
       currentIndex: 0,
@@ -44,12 +43,13 @@ export default class Game extends React.Component {
   handleClick = (index) => {
     let currentIndex = this.state.currentIndex;
     let history = this.state.history.slice();
+    const squares = [...history[currentIndex]];
+
     // check to see if game is over or squre has already been filled
     const isWinner = this.state.winner && currentIndex === history.length;
-    if (this.state.squares[index] || this.state.winner || isWinner) return;
+    if (squares[index] || this.state.winner || isWinner) return;
 
     // changing squares array with new move
-    const squares = this.state.squares.slice();
     squares[index] = this.state.nextPlayer;
 
     // Changing history
@@ -57,7 +57,6 @@ export default class Game extends React.Component {
       history = history.slice(0, currentIndex + 1);
 
     currentIndex++;
-    console.log(currentIndex, history.length);
     //saving history
     history.push(squares);
 
@@ -68,7 +67,7 @@ export default class Game extends React.Component {
     const winner = this.calculateWinner(squares);
 
     // Changing state
-    this.setState({ winner, nextPlayer, squares, history, currentIndex });
+    this.setState({ winner, nextPlayer, history, currentIndex });
   };
 
   // Time Travel feature
@@ -78,10 +77,15 @@ export default class Game extends React.Component {
     // changing nextPlayer to state of that move
     const nextPlayer = index % 2 === 0 ? "X" : "O";
 
-    this.setState({ squares: move, currentIndex: index, winner, nextPlayer });
+    this.setState({ currentIndex: index, winner, nextPlayer });
   };
   render() {
-    const { history, squares, nextPlayer, winner } = this.state;
+    const { history, nextPlayer, winner, currentIndex } = this.state;
+    console.log("Index", currentIndex);
+    const squares = history[currentIndex];
+    console.log("Squares", squares);
+    console.log("History", history);
+
     const status = winner
       ? "Winner is " + winner
       : "Next player: " + nextPlayer;
